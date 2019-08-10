@@ -24,11 +24,11 @@ It is also worth pointing out that iterating over the elements stored in shared 
 The second part of the kernel consists of adding the inner product of each thread to the corresponding position in the output vector. This is done using the atomicAdd() function. Atomic functions are functions that perform a read-operation-write at some position in memory by certifying that there will not be any interference from other threads.
 
 ## Vector-vector inner product kernel
-This kernel uses a 1D grid as well as 1D blocks. This is schematically illustrated in the figure below. In short each block computes a smaller vector-vector inner product and all these reduction $r_i$ are added together at the output memory location in an atomic manner.
+This kernel uses a 1D grid as well as 1D blocks. This is schematically illustrated in the figure below. In short each block computes a smaller vector-vector inner product and all these reductions are added together at the output memory location in an atomic manner.
 
 ![Alt text](vector_vector.png?raw=true "Title")
 
-Each block accesses vectors $a$ and $b$ in a coalesced fashion and each thread within the blocks loads a subsection of the element-wise product of a and b into shared memory. Then a reduction of the elements in shared memory takes place. Such a reduction is not cannot be fully parallelized since every element has to be added with every other elements.
+Each block accesses vectors a and b in a coalesced fashion and each thread within the blocks loads a subsection of the element-wise product of a and b into shared memory. Then a reduction of the elements in shared memory takes place. Such a reduction is not cannot be fully parallelized since every element has to be added with every other elements.
 
 After all blocks have their partial reduced value, we still need to reduce all of these values. This is simply done using the atomicAdd() function. Note that we could store all the partial sums in a vector and reduce it in a new kernel in the same manner. This was implemented and was shown to be about 10% slower with all the added overhead.
 
